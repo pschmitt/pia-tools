@@ -263,8 +263,8 @@ update_config() {
     # Extract server addresses and resolve hosts
     grep -h "remote " "$PIA_CONFIG_DIR"/*.ovpn | cut -d ' ' -f 2 \
         | sort -u > "$PIA_SERVERS_FILE"
-    cat "$PIA_SERVERS_FILE" | nslookup \
-        | sed -n 's/Address: \(.*\)/\1/gp' > "$PIA_SERVERS_IP_FILE"
+    getent hosts $(cat "$PIA_SERVERS_FILE") | cut -d ' ' -f 1 \
+         > "$PIA_SERVERS_IP_FILE"
 
     # why is following dig cmd failing randomly ?
     #dig -f /tmp/piaservers A +short | sort > $PIA_SERVERS_IP_FILE
