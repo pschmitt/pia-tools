@@ -86,6 +86,10 @@ Path to transmission config (default: /home/dl/.config/transmission-daemon/setti
 Path to the file where the currently open (forwarded) port is stored (default: $PIA_CONFIG_DIR/open_port)
 .IP \fBVIRT_NET_DEV\fR
 The virtual network device used by OpenVPN (device: tun0)
+.IP \fBNET_DEV_ETHERNET\fR
+The ethernet device used when adding and removing firewall rules with -a and -d. If not set, pia-tools will try to detect the device name. (e.g.: eth0, fallback: enp2s0)
+.IP \fBNET_DEV_WIFI\fR
+The wireless device used when adding and removing firewall rules with -a and -d. If not set, pia-tools will try to detect the device name. (e.g.: wlan0, fallback: wlp3s0)
 .SH FILES
 /etc/pia-tools.conf
 /etc/openvpn/pia/
