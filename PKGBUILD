@@ -15,7 +15,7 @@ source=('https://raw.githubusercontent.com/tempestnano/pia-tools/Single_user/pia
         'https://raw.githubusercontent.com/tempestnano/pia-tools/Single_user/pia-up'
         'https://raw.githubusercontent.com/tempestnano/pia-tools/Single_user/pia-down'
         'https://raw.githubusercontent.com/tempestnano/pia-tools/Single_user/pia-route-up'
-        ''https://raw.githubusercontent.com/tempestnano/pia-tools/Single_user/pia-tools.install')
+        'https://raw.githubusercontent.com/tempestnano/pia-tools/Single_user/pia-tools.install')
 install="${pkgname}.install"
 
 package() {
