@@ -8,20 +8,22 @@ arch=('any')
 url='https://github.com/pschmitt/pia-tools'
 license=('GPL3')
 depends=('transmission-cli' 'dnsutils' 'openvpn' 'systemd' 'sudo' 'wget' 'ufw' 'unzip' 'sed')
-source=('https://raw.github.com/pschmitt/pia-tools/master/pia-tools'
-        'https://raw.github.com/pschmitt/pia-tools/master/pia-tools.groff'
-        'https://raw.github.com/pschmitt/pia-tools/master/pia@.service'
-        'https://raw.github.com/pschmitt/pia-tools/master/pia_common'
-        'https://raw.github.com/pschmitt/pia-tools/master/pia-up'
-        'https://raw.github.com/pschmitt/pia-tools/master/pia-down'
-        'https://raw.github.com/pschmitt/pia-tools/master/pia-tools.install')
-sha256sums=('ca54f20f6aaa60ae919a6e41c0b67a6d4a2f0f33c4fec04f827b9d5d77ea2643'
-            '22a34cb38e02ee1ed32e5697bc507df074629cbf5f1f7290a72e2c947cf611eb'
-            '118d961db36fb243e059543215a818d1546ec94e8d52b24c75b7de6fe64ba749'
-            'b571a8edbd9cb2a9ad63fadf360f64d4f80e291295f6c851b3a716c291ba3f8d'
-            '063ee23a9c98e728168affb8056cda201fb02ede2bd29dfe2b768ce834b35e7c'
-            '12299e53b5024084c73e604132db3a10b6e91763d90d484cabdd1985a17cf733'
-            'a7e82a1589406477898adee768d17c0270c8bcf341ae72be823095331c4e99c5')
+source=('https://raw.githubusercontent.com/tempestnano/pia-tools/Single_user/pia-tools'
+        'https://raw.githubusercontent.com/tempestnano/pia-tools/Single_user/pia-tools.groff'
+        'https://raw.githubusercontent.com/tempestnano/pia-tools/Single_user/pia@.service'
+        'https://raw.githubusercontent.com/tempestnano/pia-tools/Single_user/pia_common'
+        'https://raw.githubusercontent.com/tempestnano/pia-tools/Single_user/pia-up'
+        'https://raw.githubusercontent.com/tempestnano/pia-tools/Single_user/pia-down'
+        'https://raw.githubusercontent.com/tempestnano/pia-tools/Single_user/pia-route-up'
+        'https://raw.githubusercontent.com/tempestnano/pia-tools/Single_user/pia-tools.install')
+md5sums=('23e2b79c6d4c1cc744595cd46ea345d0'
+         'b3fa2a6f12c6067bcb0024e54e25cf92'
+         'f74962b853215b88b54bad3dad9ba004'
+         '621f9228ba793b4307b354e92b8918c1'
+         'f25f00fe408f31e50d46d69a597c6ece'
+         'ac4fef9e231b1f7a9a009d7edf11db82'
+         '7077738433630cc80d758196b5bd2bde'
+         '24f69e9eea41a1247a974c7d5d3d9c30')
 install="${pkgname}.install"
 
 package() {
@@ -31,6 +33,6 @@ package() {
     install -Dm644 pia@.service "${pkgdir}/usr/lib/systemd/system/pia@.service"
     install -Dm644 pia_common "${pkgdir}/etc/openvpn/pia/pia_common"
     install -Dm755 pia-up "${pkgdir}/etc/openvpn/pia/pia-up"
-    install -Dm755 pia-up "${pkgdir}/etc/openvpn/pia/pia-down"
+    install -Dm755 pia-down "${pkgdir}/etc/openvpn/pia/pia-down"
+    install -Dm755 pia-route-up "${pkgdir}/etc/openvpn/pia/pia-route-up"
 }
-
