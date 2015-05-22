@@ -2,7 +2,7 @@
 
 pkgname=pia-tools
 pkgver=0.9.7.4
-pkgrel=1
+pkgrel=2
 pkgdesc='OpenVPN hook for privateinternetaccess.com'
 arch=('any')
 url='https://github.com/pschmitt/pia-tools'
