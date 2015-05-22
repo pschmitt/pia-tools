@@ -118,6 +118,7 @@ PIA_CLIENT_ID_FILE="$PIA_CONFIG_DIR/clientid"
 TRANSMISSION_SETTINGS_FILE='/home/dl/.config/transmission-daemon/settings.json'
 PIA_OPEN_PORT_FILE="$PIA_CONFIG_DIR/open_port"
 VIRT_NET_DEV='tun0'
+VPN_USER='transmission'
 ```
 
 ## Read more
