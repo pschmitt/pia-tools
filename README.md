@@ -73,6 +73,25 @@ EOM
 # Start interactive setup
 pia-tools --setup
 ```
+If instead you wish to only route traffic for your torrent client:
+```bash
+mkdir -p /etc/openvpn/pia
+
+# Feel free to edit the up/down parameters
+cat <<EOM > /etc/openvpn/pia/pia_common
+auth-user-pass passwd
+script-security 2
+up "/usr/bin/pia-tools -g"
+down "/usr/bin/pia-tools --restore-dns"
+route-noexec
+route-up /etc/openvpn/pia/pia_route_up.sh
+log /var/log/openvpn-Netherlands
+
+EOM
+
+# Start interactive setup
+pia-tools --setup
+```
 
 The setup will store your credentials in `/etc/openvpn/pia/passwd`, download the config files from PIA and append `/etc/openvpn/pia/pia_common` to all of them.
 
