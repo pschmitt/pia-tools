@@ -268,8 +268,12 @@ update_config() {
             mv "$ovpn" "$ovpn_spaceless"
         fi
         # Append up/down scripts to every ovpn file
-        cat "$PIA_COMMON_CONFIG"  | sed -e "s/passwd/$PIA_PASSWD_FILE/" >>  "$ovpn_spaceless"
+        cat "$PIA_COMMON_CONFIG" >>  "$ovpn_spaceless"
     done
+    if [[ $PIA_PASSWD_FILE != "passwd" ]]; then
+        ln -sfn $PIA_PASSWD_FILE $PIA_CONFIG_DIR/passwd
+    fi
+
     IFS=$ifs_bak
 
     # Extract server addresses and resolve hosts
