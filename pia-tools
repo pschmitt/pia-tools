@@ -259,8 +259,9 @@ update_config() {
         if [[ "$ovpn" != "$ovpn_spaceless" ]]; then
             mv "$ovpn" "$ovpn_spaceless"
         fi
+        
         # Append up/down scripts to every ovpn file
-        cat "$PIA_COMMON_CONFIG"  >> "$ovpn_spaceless"
+        cat "$PIA_COMMON_CONFIG"  | sed -e "s/passwd/$PIA_PASSWD_FILE/" >>  "$ovpn_spaceless"
     done
     IFS=$ifs_bak
 
