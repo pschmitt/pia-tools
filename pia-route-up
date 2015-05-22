@@ -1,0 +1,24 @@
+#!/usr/bin/sh
+
+# Source config file
+test "$PIA_CONF" || PIA_CONF='/etc/pia-tools.conf'
+[[ -r "$PIA_CONF" ]] && . $PIA_CONF
+
+if [[ -n "$VPN_USER" ]]; then
+  ip route add "$trusted_ip"/32 via $route_net_gateway table $VPNUSER
+  ip route add 0.0.0.0/1 via $route_vpn_gateway table $VPNUSER
+  ip route add 128.0.0.0/1 via $route_vpn_gateway table $VPNUSER
+  ip route add "$route_network_1"/32 via $route_vpn_gateway table $VPNUSER
+  ip route add $ifconfig_remote dev $dev scope link src $ifconfig_local table $VPNUSER
+
+
+
+
+  if [[ `ip rule list | grep -c 0x3` == 0 ]]; then
+    ip rule add from all fwmark 0x3 lookup $VPNUSER
+  fi
+
+  ip route append default via 127.0.0.1 dev lo table $VPNUSER
+  ip route flush cache
+fi
+exit 0
