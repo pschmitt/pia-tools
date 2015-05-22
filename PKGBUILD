@@ -21,7 +21,7 @@ md5sums=('23e2b79c6d4c1cc744595cd46ea345d0'
          'f74962b853215b88b54bad3dad9ba004'
          '621f9228ba793b4307b354e92b8918c1'
          'f25f00fe408f31e50d46d69a597c6ece'
-         'ac4fef9e231b1f7a9a009d7edf11db82'
+         '0ed5cf87b2853f9688c9df1dfe19b061'
          '7077738433630cc80d758196b5bd2bde'
          '24f69e9eea41a1247a974c7d5d3d9c30')
 install="${pkgname}.install"
