@@ -2,3 +2,5 @@ auth-user-pass passwd
 script-security 2 
 up "/etc/openvpn/pia/pia-up"
 down "/etc/openvpn/pia/pia-down"
+route-noexec
+route-up /etc/openvpn/pia/pia_route_up.sh
