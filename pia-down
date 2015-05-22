@@ -1,5 +1,14 @@
 #!/usr/bin/sh
 
+test "$PIA_CONF" || PIA_CONF='/etc/pia-tools.conf'
+[[ -r "$PIA_CONF" ]] && . $PIA_CONF
+
+if [[ -n "$VPN_USER" ]]; then
+  ip route flush table $VPNUSER
+  ip route flush cache
+fi
+
+
 # Restore DNS settings
 (sleep 5 && pia-tools --restore-dns --check)&
 # Update conky
