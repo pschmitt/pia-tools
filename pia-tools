@@ -349,27 +349,35 @@ iptables_mark(){
     if [[ -z $VPN_USER ]] ; then
             VPN_USER=transmission
     fi
-    iptables-save | grep -v "$VPN_USER VPN" | iptables-restore
+    iptables-save | grep -v "$VPN_USER" | iptables-restore
     iptables-save | grep -v "$VIRT_NET_DEV" | iptables-restore
 
     # host we want to "reach"
-    host=$trusted_ip
+    host=google.com
     # get the ip of that host (works with dns and /etc/hosts. In case we get multiple ipaddresses, we just want one of them
     host_ip=$(getent ahosts "$host" | head -1 | awk '{print $1}')
     # only list the interface used to reach a specific host/IP. We only want the part between dev and src (use grep for that)
     DEFAULT_INTERFACE=$(ip route get "$host_ip" | grep -Po '(?<=(dev )).*(?= src)')
     #Get ip address of default interface in A.B.C.D/n format
-    DEFAULT_IP=$(ip addr show dev $interface | sed -nr 's/.*inet ([^ ]+).*/\1/p')
+	echo "ip addr show dev $DEFAULT_INTERFACE | sed -nr 's/.*inet ([^ ]+).*/\1/p'"
+    DEFAULT_IP=$(ip addr show dev $DEFAULT_INTERFACE | sed -nr 's/.*inet ([^ ]+).*/\1/p')
 
     echo $DEFAULT_IP >> /tmp/FULL_IP
-    iptables -t mangle -A OUTPUT ! --dest $DEFAULT_IP  -m owner --uid-owner $VPN_USER -j MARK --set-mark 0x3 -m comment --comment "$VPN_USER VPN"
-    echo "iptables -t mangle -A OUTPUT ! --dest $DEFAULT_IP  -m owner --uid-owner $VPN_USER -j MARK --set-mark 0x3 -m comment --comment $VPN_USER VPN"    
+    iptables -t mangle -A OUTPUT ! --dest $DEFAULT_IP  -m owner --uid-owner $VPN_USER -j MARK --set-mark 0x3 -m comment --comment $VPN_USER
+	echo "iptables -t mangle -A OUTPUT ! --dest $DEFAULT_IP  -m owner --uid-owner $VPN_USER -j MARK --set-mark 0x3 -m comment --comment $VPN_USER"
 # let $VPNUSER access lo and $INTERFACE
-    iptables -A OUTPUT -o lo -m owner --uid-owner $VPN_USER -j ACCEPT -m comment --comment "$VPN_USER VPN"
-    iptables -A OUTPUT -o $INTERFACE_VPN -m owner --uid-owner $VPN_USER -j ACCEPT -m comment --comment "$VPN_USER VPN"
-    # all packets on $INTERFACE_VPN needs to be masqueraded
-    iptables -t nat -A POSTROUTING -o $INTERFACE_VPN -j MASQUERADE -m comment --comment "$VPN_USER VPN"
+    iptables -A OUTPUT -o lo -m owner --uid-owner $VPN_USER -j ACCEPT -m comment --comment $VPN_USER
+    iptables -A OUTPUT -o $VIRT_NET_DEV -m owner --uid-owner $VPN_USER -j ACCEPT -m comment --comment $VPN_USER
+    # all packets on $VIRT_NET_DEV needs to be masqueraded
+    iptables -t nat -A POSTROUTING -o $VIRT_NET_DEV -j MASQUERADE -m comment --comment $VPN_USER
+
+    echo "iptables -A OUTPUT -o lo -m owner --uid-owner $VPN_USER -j ACCEPT -m comment --comment $VPN_USER"
+    echo "iptables -A OUTPUT -o $VIRT_NET_DEV -m owner --uid-owner $VPN_USER -j ACCEPT -m comment --comment $VPN_USER"
+	echo "iptables -t nat -A POSTROUTING -o $VIRT_NET_DEV -j MASQUERADE -m comment --comment $VPN_USER"
+
 }
+
+
 
 
 # If no option -> refresh

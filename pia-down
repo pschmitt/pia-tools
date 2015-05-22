@@ -4,7 +4,7 @@ test "$PIA_CONF" || PIA_CONF='/etc/pia-tools.conf'
 [[ -r "$PIA_CONF" ]] && . $PIA_CONF
 
 if [[ -n "$VPN_USER" ]]; then
-  ip route flush table $VPNUSER
+  ip route flush table $VPN_USER
   ip route flush cache
 fi
 
