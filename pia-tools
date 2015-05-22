@@ -162,8 +162,19 @@ transmission_peer_port_update() {
         # get current listening port
         transmission_peer_port="$(transmission-remote -si | grep Listenport | grep -oE '[0-9]+')"
         if [[ "$PIA_OPEN_PORT_NEW" != "$transmission_peer_port" ]]; then
-            transmission-remote -p "$PIA_OPEN_PORT_NEW"
-            # systemctl restart transmission
+	    
+            TRANSUSER=$(cat $TRANSMISSION_SETTINGS_FILE | grep \"rpc-username\":)
+	    TRANSUSER=${TRANSUSER#*\"rpc-username\": }
+	    TRANSUSER=${TRANSUSER%*, }
+	    TRANSPASS=$(cat $TRANSMISSION_SETTINGS_FILE | grep \"rpc-password\":)
+	    TRANSPASS=${TRANSPASS#*\"rpc-password\": }
+	    TRANSPASS=${TRANSPASS%*, }
+	    if [[ -z $TRANSUSER ]]; then
+	        transmission-remote -p "$PIA_OPEN_PORT_NEW"
+            else
+		transmission-remote --auth $TRANSUSER:$TRANSPASS -p "$PIA_OPEN_PORT_NEW"
+	    fi 
+	# systemctl restart transmission
             echo 'Checking port...'
             # TODO The sleep timer may need to be adjusted
             sleep 3 && transmission-remote -pt
