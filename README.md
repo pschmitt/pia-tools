@@ -81,8 +81,8 @@ mkdir -p /etc/openvpn/pia
 cat <<EOM > /etc/openvpn/pia/pia_common
 auth-user-pass passwd
 script-security 2
-up "/usr/bin/pia-tools -g"
-down "/usr/bin/pia-tools --restore-dns"
+up "/etc/openvpn/pia/pia-up"
+down "/etc/openvpn/pia/pia-down"
 route-noexec
 route-up /etc/openvpn/pia/pia_route_up.sh
 
