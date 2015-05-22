@@ -15,6 +15,7 @@ source=('https://raw.githubusercontent.com/tempestnano/pia-tools/Single_user/pia
         'https://raw.githubusercontent.com/tempestnano/pia-tools/Single_user/pia-up'
         'https://raw.githubusercontent.com/tempestnano/pia-tools/Single_user/pia-down'
         'https://raw.githubusercontent.com/tempestnano/pia-tools/Single_user/pia-route-up'
+        'https://raw.githubusercontent.com/tempestnano/pia-tools/Single_user/pia_common_single_user'
         'https://raw.githubusercontent.com/tempestnano/pia-tools/Single_user/pia-tools.install')
 md5sums=('23e2b79c6d4c1cc744595cd46ea345d0'
          'b3fa2a6f12c6067bcb0024e54e25cf92'
