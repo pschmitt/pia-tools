@@ -210,8 +210,11 @@ request_port() {
         echo "VPN local IP: $local_vpn_ip"
     fi
     if [[ -n "$VPN_USER" ]]; then
-        PIA_OPEN_PORT_NEW="$(sudo -u $VPN_USER curl -Ld 'user=$username&pass=$passwd&client_id=$client_id&local_ip=$local_vpn_ip' https://www.privateinternetaccess.com/vpninfo/port_forward_assignment | grep -oE '[0-9]+' 2>&1)"
-    	echo "sudo -u $VPN_USER curl -Ld user=$username&pass=$passwd&client_id=$client_id&local_ip=$local_vpn_ip' https://www.privateinternetaccess.com/vpninfo/port_forward_assignment | grep -oE '[0-9]+' 2>&1)"
+	PIA_CURL=$(sudo -u $VPN_USER curl -Ld "`user=$username&pass=$passwd&client_id=$client_id&local_ip=$local_vpn_ip`" https://www.privateinternetaccess.com/vpninfo/port_forward_assignment)
+	echo tacos
+	echo  "user=$username&pass=$passwd&client_id=$client_id&local_ip=$local_vpn_ip"
+	echo $PIA_CURL
+	PIA_OPEN_PORT_NEW= echo $PIA_CURL | grep -oE "[0-9]+" 2>&1
 	echo $PIA_OPEN_PORT_NEW
 
     else
