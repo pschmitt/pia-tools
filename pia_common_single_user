@@ -3,4 +3,4 @@ script-security 2
 up "/etc/openvpn/pia/pia-up"
 down "/etc/openvpn/pia/pia-down"
 route-noexec
-route-up /etc/openvpn/pia/pia-route-up
+route-up "/etc/openvpn/pia/pia-route-up"

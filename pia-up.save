@@ -1,0 +1,12 @@
+#!/usr/bin/sh
+
+# Change DNS settings right away
+pia-tools --pia-dns
+# Process single vpn user if $VPN_USER is defined
+pia-tools -S $trusted_ip
+# Port forward request will fail if asked too early
+(sleep 5 && pia-tools -r)&
+# Update conky
+(sleep 5 && killall -SIGUSR1 conky)&
+
+exit 0

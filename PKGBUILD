@@ -2,7 +2,7 @@
 
 pkgname=pia-tools
 pkgver=0.9.7.4
-pkgrel=5
+pkgrel=7
 pkgdesc='OpenVPN hook for privateinternetaccess.com'
 arch=('any')
 url='https://github.com/pschmitt/pia-tools'
@@ -17,14 +17,14 @@ source=('https://raw.githubusercontent.com/tempestnano/pia-tools/Single_user/pia
         'https://raw.githubusercontent.com/tempestnano/pia-tools/Single_user/pia-route-up'
         'https://raw.githubusercontent.com/tempestnano/pia-tools/Single_user/pia_common_single_user'
         'https://raw.githubusercontent.com/tempestnano/pia-tools/Single_user/pia-tools.install')
-md5sums=('28070f9b6b9378d884cf46fb5b76f665'
+md5sums=('7a49a36bbf4ef6d54596e681685d390a'
          'b3fa2a6f12c6067bcb0024e54e25cf92'
          'f74962b853215b88b54bad3dad9ba004'
          '621f9228ba793b4307b354e92b8918c1'
          'f25f00fe408f31e50d46d69a597c6ece'
          '0ed5cf87b2853f9688c9df1dfe19b061'
          '3aa6dffb97bfb02a719c56b53de5658a'
-         '3dfea239907a974507614357f6723856'
+         '80724ce4e66d14e2fef83edae778df0c'
          '24f69e9eea41a1247a974c7d5d3d9c30')
 install="${pkgname}.install"
 
