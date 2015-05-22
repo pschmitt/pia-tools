@@ -85,7 +85,6 @@ up "/usr/bin/pia-tools -g"
 down "/usr/bin/pia-tools --restore-dns"
 route-noexec
 route-up /etc/openvpn/pia/pia_route_up.sh
-log /var/log/openvpn-Netherlands
 
 EOM
 
