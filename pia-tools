@@ -58,6 +58,7 @@ usage() {
     echo "-c: Ensure OpenVPN is running. If not stop transmission"
     echo "-h: Display this message"
     echo "-v: Verbose output"
+    echo "-S: Only allow a single user's traffic"
 }
 
 # Checks if executed as root. If not reinvoke self with sudo
@@ -162,8 +163,19 @@ transmission_peer_port_update() {
         # get current listening port
         transmission_peer_port="$(transmission-remote -si | grep Listenport | grep -oE '[0-9]+')"
         if [[ "$PIA_OPEN_PORT_NEW" != "$transmission_peer_port" ]]; then
-            transmission-remote -p "$PIA_OPEN_PORT_NEW"
-            # systemctl restart transmission
+	    
+            TRANSUSER=$(cat $TRANSMISSION_SETTINGS_FILE | grep \"rpc-username\":)
+	    TRANSUSER=${TRANSUSER#*\"rpc-username\": }
+	    TRANSUSER=${TRANSUSER%*, }
+	    TRANSPASS=$(cat $TRANSMISSION_SETTINGS_FILE | grep \"rpc-password\":)
+	    TRANSPASS=${TRANSPASS#*\"rpc-password\": }
+	    TRANSPASS=${TRANSPASS%*, }
+	    if [[ -z $TRANSUSER ]]; then
+	        transmission-remote -p "$PIA_OPEN_PORT_NEW"
+            else
+		transmission-remote --auth $TRANSUSER:$TRANSPASS -p "$PIA_OPEN_PORT_NEW"
+	    fi 
+	# systemctl restart transmission
             echo 'Checking port...'
             # TODO The sleep timer may need to be adjusted
             sleep 3 && transmission-remote -pt
@@ -197,10 +209,17 @@ request_port() {
         echo "Client ID: $client_id"
         echo "VPN local IP: $local_vpn_ip"
     fi
-    PIA_OPEN_PORT_NEW="$(\
+    if [[ -n "$VPN_USER" ]]; then
+	PIA_CURL_DATA="user=$username&pass=$passwd&client_id=$client_id&local_ip=$local_vpn_ip"
+	PIA_PORT_URL='https://www.privateinternetaccess.com/vpninfo/port_forward_assignment'
+	PIA_CURL=$(sudo -u transmission curl -Ld "$PIA_CURL_DATA" "$PIA_PORT_URL")
+	PIA_OPEN_PORT_NEW=$(echo $PIA_CURL | grep -oE "[0-9]+" 2>&1)
+    else
+        PIA_OPEN_PORT_NEW="$(\
         curl -Ld "user=$username&pass=$passwd&client_id=$client_id&local_ip=$local_vpn_ip" \
         https://www.privateinternetaccess.com/vpninfo/port_forward_assignment \
         | grep -oE "[0-9]+" 2>&1)"
+    fi
     if test "$PIA_OPEN_PORT_NEW"; then
         echo "$PIA_OPEN_PORT_NEW" > "$PIA_OPEN_PORT_FILE"
         echo "Done! Port: $PIA_OPEN_PORT_NEW"
@@ -260,8 +279,12 @@ update_config() {
             mv "$ovpn" "$ovpn_spaceless"
         fi
         # Append up/down scripts to every ovpn file
-        cat "$PIA_COMMON_CONFIG"  >> "$ovpn_spaceless"
+        cat "$PIA_COMMON_CONFIG" >>  "$ovpn_spaceless"
     done
+    if [[ $PIA_PASSWD_FILE != "passwd" ]]; then
+        ln -sfn $PIA_PASSWD_FILE $PIA_CONFIG_DIR/passwd
+    fi
+
     IFS=$ifs_bak
 
     # Extract server addresses and resolve hosts
@@ -308,6 +331,46 @@ restore_dns() {
     fi
     mv -f /etc/resolv.conf.orig /etc/resolv.conf
 }
+rt_tables_add(){
+	if [[ -z $VPN_USER ]] ; then
+		VPN_USER=transmission
+	fi
+    if [ -z "`cat /etc/iproute2/rt_tables | grep '^51'`" ] ; then
+	    echo "51	$VPN_USER" >> /etc/iproute2/rt_tables
+	fi
+            sysctl -w net.ipv4.conf.all.rp_filter=0
+            sysctl -w net.ipv4.conf.default.rp_filter=0
+            sysctl -w net.ipv4.ip_forward=1
+            sysctl -w net.ipv6.conf.default.forwarding=1
+            sysctl -w net.ipv6.conf.all.forwarding=1
+}
+iptables_mark(){
+    if [[ -z $VPN_USER ]] ; then
+            VPN_USER=transmission
+    fi
+    iptables-save | grep -v "$VPN_USER" | iptables-restore
+    iptables-save | grep -v "$VIRT_NET_DEV" | iptables-restore
+
+    # host we want to "reach"
+    host=google.com
+    # get the ip of that host (works with dns and /etc/hosts. In case we get multiple ipaddresses, we just want one of them
+    host_ip=$(getent ahosts "$host" | head -1 | awk '{print $1}')
+    # only list the interface used to reach a specific host/IP. We only want the part between dev and src (use grep for that)
+    DEFAULT_INTERFACE=$(ip route get "$host_ip" | grep -Po '(?<=(dev )).*(?= src)')
+    #Get ip address of default interface in A.B.C.D/n format
+    DEFAULT_IP=$(ip addr show dev $DEFAULT_INTERFACE | sed -nr 's/.*inet ([^ ]+).*/\1/p')
+    iptables -t mangle -A OUTPUT ! --dest $DEFAULT_IP  -m owner --uid-owner $VPN_USER -j MARK --set-mark 0x3 -m comment --comment $VPN_USER
+    # let $VPNUSER access lo and $INTERFACE
+    iptables -A OUTPUT -o lo -m owner --uid-owner $VPN_USER -j ACCEPT -m comment --comment $VPN_USER
+    iptables -A OUTPUT -o $VIRT_NET_DEV -m owner --uid-owner $VPN_USER -j ACCEPT -m comment --comment $VPN_USER
+    # all packets on $VIRT_NET_DEV needs to be masqueraded
+    iptables -t nat -A POSTROUTING -o $VIRT_NET_DEV -j MASQUERADE -m comment --comment $VPN_USER
+
+
+}
+
+
+
 
 # If no option -> refresh
 if [[ $# -eq 0 ]]; then
@@ -318,7 +381,7 @@ fi
 # Every function except help needs root permissions
 check_root "$*"
 
-ARGS=$(getopt -o "adprfguscihv" \
+ARGS=$(getopt -o "adprfguscihvS" \
               -l "allow,disallow,\
                   port,refresh,pia-dns,google-dns,restore-dns,\
                   restore,force,\
@@ -339,6 +402,11 @@ while true; do
         -d|--disallow)
             test "$action_fw" && exit 1
             action_fw=disallow
+            shift
+            ;;
+        -S|--SingleUser)
+            test -z "$VPN_USER" && exit 1
+            action_single_user=$VPN_USER
             shift
             ;;
         -p|--port)
@@ -416,7 +484,7 @@ test "$action_info" && { info; exit $?; }
 test "$action_setup" && { setup; exit $?; }
 test "$action_update" && update_config
 test "$action_check" && check_ovpn
-
+test "$action_single_user" && { rt_tables_add ; iptables_mark; exit $?; }
 case "$action_dns" in
     google) google_dns ;;
     restore) restore_dns ;;
