@@ -161,25 +161,15 @@ transmission_peer_port_update() {
     # Check if transmission is running
     if check_transmission; then
         # get current listening port
-        transmission_peer_port="$(transmission-remote -si | grep Listenport | grep -oE '[0-9]+')"
-        if [[ "$PIA_OPEN_PORT_NEW" != "$transmission_peer_port" ]]; then
+        transmission_peer_port=$(transmission-remote --auth $TRANSUSER:$TRANSPASS -si | grep Listenport | grep -oE '[0-9]+')
+	echo $transmission_peer_port
+	if [[ "$PIA_OPEN_PORT_NEW" != "$transmission_peer_port" ]]; then
 	    
-            TRANSUSER=$(cat $TRANSMISSION_SETTINGS_FILE | grep \"rpc-username\":)
-	    TRANSUSER=${TRANSUSER#*\"rpc-username\": }
-	    TRANSUSER=${TRANSUSER%*, }
-	    TRANSPASS=$(cat $TRANSMISSION_SETTINGS_FILE | grep \"rpc-password\":)
-	    TRANSPASS=${TRANSPASS#*\"rpc-password\": }
-	    TRANSPASS=${TRANSPASS%*, }
-	    if [[ -z $TRANSUSER ]]; then
-	        transmission-remote -p "$PIA_OPEN_PORT_NEW"
-            else
 		transmission-remote --auth $TRANSUSER:$TRANSPASS -p "$PIA_OPEN_PORT_NEW"
-	    fi 
-	# systemctl restart transmission
-            echo 'Checking port...'
-            # TODO The sleep timer may need to be adjusted
-            sleep 3 && transmission-remote -pt
         fi
+        echo 'Checking port...'
+            # TODO The sleep timer may need to be adjusted
+        sleep 3 && transmission-remote --auth $TRANSUSER:$TRANSPASS -pt
     else
         # write new listening port to config
         if test "$PIA_OPEN_PORT_NEW" && \
@@ -213,6 +203,7 @@ request_port() {
 	PIA_CURL_DATA="user=$username&pass=$passwd&client_id=$client_id&local_ip=$local_vpn_ip"
 	PIA_PORT_URL='https://www.privateinternetaccess.com/vpninfo/port_forward_assignment'
 	PIA_CURL=$(sudo -u transmission curl -Ld "$PIA_CURL_DATA" "$PIA_PORT_URL")
+	echo $PIA_CURL
 	PIA_OPEN_PORT_NEW=$(echo $PIA_CURL | grep -oE "[0-9]+" 2>&1)
     else
         PIA_OPEN_PORT_NEW="$(\
