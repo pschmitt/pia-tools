@@ -210,15 +210,12 @@ request_port() {
         echo "VPN local IP: $local_vpn_ip"
     fi
     if [[ -n "$VPN_USER" ]]; then
-	PIA_CURL=$(sudo -u $VPN_USER curl -Ld "`user=$username&pass=$passwd&client_id=$client_id&local_ip=$local_vpn_ip`" https://www.privateinternetaccess.com/vpninfo/port_forward_assignment)
-	echo tacos
-	echo  "user=$username&pass=$passwd&client_id=$client_id&local_ip=$local_vpn_ip"
-	echo $PIA_CURL
-	PIA_OPEN_PORT_NEW= echo $PIA_CURL | grep -oE "[0-9]+" 2>&1
-	echo $PIA_OPEN_PORT_NEW
-
+	PIA_CURL_DATA="user=$username&pass=$passwd&client_id=$client_id&local_ip=$local_vpn_ip"
+	PIA_PORT_URL='https://www.privateinternetaccess.com/vpninfo/port_forward_assignment'
+	PIA_CURL=$(sudo -u transmission curl -Ld "$PIA_CURL_DATA" "$PIA_PORT_URL")
+	PIA_OPEN_PORT_NEW=$(echo $PIA_CURL | grep -oE "[0-9]+" 2>&1)
     else
-    PIA_OPEN_PORT_NEW="$(\
+        PIA_OPEN_PORT_NEW="$(\
         curl -Ld "user=$username&pass=$passwd&client_id=$client_id&local_ip=$local_vpn_ip" \
         https://www.privateinternetaccess.com/vpninfo/port_forward_assignment \
         | grep -oE "[0-9]+" 2>&1)"
@@ -361,21 +358,14 @@ iptables_mark(){
     # only list the interface used to reach a specific host/IP. We only want the part between dev and src (use grep for that)
     DEFAULT_INTERFACE=$(ip route get "$host_ip" | grep -Po '(?<=(dev )).*(?= src)')
     #Get ip address of default interface in A.B.C.D/n format
-	echo "ip addr show dev $DEFAULT_INTERFACE | sed -nr 's/.*inet ([^ ]+).*/\1/p'"
     DEFAULT_IP=$(ip addr show dev $DEFAULT_INTERFACE | sed -nr 's/.*inet ([^ ]+).*/\1/p')
-
-    echo $DEFAULT_IP >> /tmp/FULL_IP
     iptables -t mangle -A OUTPUT ! --dest $DEFAULT_IP  -m owner --uid-owner $VPN_USER -j MARK --set-mark 0x3 -m comment --comment $VPN_USER
-	echo "iptables -t mangle -A OUTPUT ! --dest $DEFAULT_IP  -m owner --uid-owner $VPN_USER -j MARK --set-mark 0x3 -m comment --comment $VPN_USER"
-# let $VPNUSER access lo and $INTERFACE
+    # let $VPNUSER access lo and $INTERFACE
     iptables -A OUTPUT -o lo -m owner --uid-owner $VPN_USER -j ACCEPT -m comment --comment $VPN_USER
     iptables -A OUTPUT -o $VIRT_NET_DEV -m owner --uid-owner $VPN_USER -j ACCEPT -m comment --comment $VPN_USER
     # all packets on $VIRT_NET_DEV needs to be masqueraded
     iptables -t nat -A POSTROUTING -o $VIRT_NET_DEV -j MASQUERADE -m comment --comment $VPN_USER
 
-    echo "iptables -A OUTPUT -o lo -m owner --uid-owner $VPN_USER -j ACCEPT -m comment --comment $VPN_USER"
-    echo "iptables -A OUTPUT -o $VIRT_NET_DEV -m owner --uid-owner $VPN_USER -j ACCEPT -m comment --comment $VPN_USER"
-	echo "iptables -t nat -A POSTROUTING -o $VIRT_NET_DEV -j MASQUERADE -m comment --comment $VPN_USER"
 
 }
 
