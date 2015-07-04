@@ -81,7 +81,7 @@ In order to download the config files again run `pia-tools --update`
 ## Go! Go! GOOOOO!
 
 ```bash
-systemctl start pia@Sweden
+systemctl start pia@{server}  # See server section below for a list of all possible servers
 ```
 
 ## Sample config file
@@ -108,3 +108,35 @@ If you installed the [MANPAGE](#manpage):
 ```bash
 man pia-tools
 ```
+
+
+## [Servers](https://www.privateinternetaccess.com/pages/network/) (found in `/etc/openvpn/pia` after installation)
+  - AU_Melbourne
+  - AU_Sydney
+  - Brazil
+  - CA_North_York
+  - CA_Torronto
+  - France
+  - Germany
+  - Hong_Kong
+  - Israel
+  - Japan
+  - Mexico
+  - Netherlands
+  - Romania
+  - Russia
+  - Singapore
+  - Sweden
+  - Switzerland
+  - Turkey
+  - UK_London
+  - UK_Southampton
+  - US_California
+  - US_East
+  - US_Florida
+  - US_Midwest
+  - US_New_York_City
+  - US_Seattle
+  - US_Silicon_Valley
+  - US_Texas
+  - US_West
