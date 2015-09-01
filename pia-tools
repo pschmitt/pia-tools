@@ -33,7 +33,8 @@ if [[ -z "$PIA_CLIENT_ID_FILE" ]]; then
     PIA_CLIENT_ID_FILE="$PIA_CONFIG_DIR/clientid"
 fi
 if [[ -z "$TRANSMISSION_SETTINGS_FILE" ]]; then
-    TRANSMISSION_SETTINGS_FILE='/home/dl/.config/transmission-daemon/settings.json'
+    current_user_home=$(eval echo ~$(logname))
+    TRANSMISSION_SETTINGS_FILE="$curent_user_home/.config/transmission-daemon/settings.json"
 fi
 if [[ -z "$PIA_OPEN_PORT_FILE" ]]; then
     PIA_OPEN_PORT_FILE="$PIA_CONFIG_DIR/open_port"

@@ -81,7 +81,7 @@ File holding your PIA credentials (default: $PIA_CONFIG_DIR/passwd)
 .IP \fBPIA_CLIENT_ID_FILE\fR
 File where your client-ID is stored (default: $PIA_CONFIG_DIR/clientid)
 .IP \fBTRANSMISSION_SETTINGS_FILE\fR
-Path to transmission config (default: /home/dl/.config/transmission-daemon/settings.json)
+Path to transmission config (default: (current user's) $HOME/.config/transmission-daemon/settings.json)
 .IP \fBPIA_OPEN_PORT_FILE\fR
 Path to the file where the currently open (forwarded) port is stored (default: $PIA_CONFIG_DIR/open_port)
 .IP \fBVIRT_NET_DEV\fR
