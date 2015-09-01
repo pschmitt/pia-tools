@@ -40,7 +40,7 @@ if [[ -z "$PIA_OPEN_PORT_FILE" ]]; then
 fi
 PIA_OPEN_PORT="$(cat $PIA_OPEN_PORT_FILE 2>/dev/null)"
 if [[ -z "$NETWORK_DEVICES" ]]; then
-    NETWORK_DEVICES=$(ip route get "$(host privateinternetaccess.com | awk '/has address/ { print $4 }')" | awk '/dev/ { print $5 }')
+    NETWORK_DEVICES=$(ip link show | awk -v ORS="" -F ":" '/^[0-9]/ && !/lo/ && !/tun/ {print $2}' | sed 's/^ //')
 fi
 if [[ -z "$VIRT_NET_DEV" ]]; then
     VIRT_NET_DEV='tun0'
