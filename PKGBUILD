@@ -1,6 +1,6 @@
 # Maintainer: Philipp Schmitt (philipp<at>schmitt<dot>co)
 
-pkgname=pia-tools-orig
+pkgname=pia-tools
 pkgver=0.9.8.0
 pkgrel=1
 pkgdesc="OpenVPN hook for privateinternetaccess.com"
