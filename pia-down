@@ -1,8 +1,1 @@
-#!/usr/bin/sh
-
-# Restore DNS settings
-(sleep 5 && pia-tools --restore-dns --check)&
-# Update conky
-(sleep 5 && killall -SIGUSR1 conky)&
-
-exit 0
+pia-up
