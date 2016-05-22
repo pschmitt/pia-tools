@@ -2,3 +2,9 @@
 pkg/
 src/
 *.src.tar.gz
+.ropeproject/
+build/
+dist/
+*.spec
+*.pyc
+*.tar.gz

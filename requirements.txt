@@ -1,0 +1,2 @@
+python-systemd-dbus==0.0.2
+requests==2.10.0
