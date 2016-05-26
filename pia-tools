@@ -209,7 +209,7 @@ new_client_id() {
 request_port() {
     local username="$(head -1 $PIA_PASSWD_FILE)"
     local passwd="$(tail -1 $PIA_PASSWD_FILE)"
-    local local_vpn_ip="$(ip addr show $VIRT_NET_DEV | grep inet | awk '{ print $2 }')"
+    local local_vpn_ip="$(ip addr show $VIRT_NET_DEV | grep inet | head -1 | awk '{ print $2 }')"
     local client_id="$1"
     [[ -z "$local_vpn_ip" ]] && local_vpn_ip=$LOCAL_IP
     echo -n "Updating port forwarding... "
