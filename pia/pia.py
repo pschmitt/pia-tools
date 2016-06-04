@@ -378,24 +378,32 @@ def check(args):
                 __get_available_exit_points()
             )
         )
+    update_daemons(args.DAEMON)
     if not active or exit_point != args.exit_point:
         pia_connect(args.exit_point, blocking=True)
+        reconnect(blocking=True)
         update_daemons(args.DAEMON)
     if not internet():
         logger.info('Internet connectivity lost. Attempting to reconnect')
         reconnect(blocking=True)
         update_daemons(args.DAEMON)
     if args.port_fwd:
-        request_port_fwd(False, args.update_transmission_port)
+        try:
+            request_port_fwd(False, args.update_transmission_port)
+        except Exception as e:
+            logger.error('Port forward request failed: {}'.format(e.message))
     return active
 
 
 def watch(args):
     interval = args.interval if args.interval else 60
     while True:
-        check(args)
-        logger.info('Done. Sleep {}'.format(interval))
-        time.sleep(interval)
+        try:
+            check(args)
+            logger.info('Done. Sleep {}'.format(interval))
+            time.sleep(interval)
+        except Exception as e:
+            logger.error('Something went wrong: {}'.format(e.message))
 
 
 def __get_interface_ip(interface):
@@ -476,7 +484,12 @@ def request_port_fwd(new_port, update_transmission):
     with open(PIA_OPEN_PORT_FILE, 'w') as f:
         f.write(str(port))
     if update_transmission:
-        update_transmission_port(port)
+        try:
+            update_transmission_port(port)
+        except Exception as e:
+            logger.error(
+                'Failed to update transmission port: {}'.format(e.message)
+            )
 
 def update_transmission_port(peer_port, host='127.0.0.1', port=9091):
     client = transmissionrpc.Client(host, port)
