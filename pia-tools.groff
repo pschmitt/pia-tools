@@ -12,9 +12,6 @@ Script to automate privateinternetacces port forwarding and starting/stopping tr
 \fB\-p\fR, \fB \-\-port\fR
 Request a new forwarding port
 .TP
-\fB\-r\fR, \fB \-\-refresh\fR
-Request port forwarding [default]
-.TP
 \fB\-a\fR, \fB \-\-allow\fR
 Unblock all non-VPN traffic [default]
 .TP
