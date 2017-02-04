@@ -180,7 +180,7 @@ transmission_peer_port_update() {
     local transmission_peer_port="$(grep 'peer-port\"' $TRANSMISSION_SETTINGS_FILE | grep -Eo '[0-9]+')"
     echo -n "Updating transmission's listening port... "
     # Check if transmission is running
-    if check_transmission; then
+    if _is_running transmission; then
         # get current listening port
         transmission_peer_port="$(transmission-remote -si | grep Listenport | grep -oE '[0-9]+')"
         if [[ "$PIA_OPEN_PORT_NEW" != "$transmission_peer_port" ]]; then
