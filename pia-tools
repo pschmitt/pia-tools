@@ -274,7 +274,7 @@ update_config() {
     rm -f "$PIA_CONFIG_DIR/ca.crt" "$PIA_CONFIG_DIR"/*.ovpn
 
     # Extract config files
-    unzip "$overwrite" -d "$PIA_CONFIG_DIR" -q "$PIA_CONFIG_DIR/openvpn.zip"
+    unzip $overwrite -d "$PIA_CONFIG_DIR" -q "$PIA_CONFIG_DIR/openvpn.zip"
 
     # Replace space by underscore in filenames
     local ifs_bak=$IFS
