@@ -54,16 +54,17 @@ if [[ -z "$DAEMONS" ]]; then
 fi
 
 usage() {
-    echo "Usage: $1 [-p|r] [-a|d] [-u] [-c] [-h]"
-    echo "-p: Request new port"
-    echo "-a: Block non VPN traffic (iptables)"
-    echo "-d: Unblock non VPN traffic (iptables) [default]"
-    echo "-g: Use PIA DNS (updates resolv.conf)"
-    echo "-u: Update configuration files"
-    echo "-s: Run setup"
-    echo "-c: Ensure OpenVPN is running. If not stop transmission"
-    echo "-h: Display this message"
-    echo "-v: Verbose output"
+    echo "Usage: $1 [-p] [-a|d] [-u|s|l] [-c] [-h]"
+    echo "  -p: Request new port"
+    echo "  -a: Block non VPN traffic (iptables)"
+    echo "  -d: Unblock non VPN traffic (iptables)"
+    echo "  -g: Use PIA DNS (updates resolv.conf)"
+    echo "  -l: List available VPN exit point"
+    echo "  -u: Update configuration files"
+    echo "  -s: Run setup"
+    echo "  -c: Ensure OpenVPN is running. If not stop transmission"
+    echo "  -h: Display this message"
+    echo "  -v: Verbose output"
 }
 
 # Checks if executed as root. If not reinvoke self with sudo
@@ -255,6 +256,15 @@ setup() {
     echo "# systemctl start pia@Sweden"
 }
 
+list() {
+    echo -e "Available VPN endpoints:\n"
+    local e
+    for e in /etc/openvpn/pia/*.ovpn
+    do
+        basename "${e//.ovpn//}"
+    done
+}
+
 update_config() {
     echo -n 'Updating configuration... '
     local ovpn ovpn_spaceless overwrite=$([[ -n "$FORCE" ]] && echo '-o')
@@ -339,11 +349,11 @@ fi
 # Every function except help needs root permissions
 check_root "$*"
 
-ARGS=$(getopt -o "adpfguscihv" \
+ARGS=$(getopt -o "adpfguscilhv" \
               -l "allow,disallow,\
                   port,pia-dns,google-dns,restore-dns,\
                   restore,force,check,\
-                  update,setup,info,help,verbose" \
+                  update,setup,list,info,help,verbose" \
               -n "$0" -- "$@")
 
 [[ $? -ne 0 ]] && { usage "$(basename $0)"; exit 1; }
@@ -400,6 +410,10 @@ while true; do
             action_info=1
             shift
             ;;
+        -l|--list)
+            action_list=1
+            shift
+            ;;
         -s|--setup)
             action_setup=1
             shift
@@ -429,6 +443,7 @@ done
 
 test "$action_help" && { usage "$(basename $0)"; exit $?; }
 test "$action_info" && { info; exit $?; }
+test "$action_list" && { list; exit $?; }
 test "$action_setup" && { setup; exit $?; }
 test "$action_update" && update_config
 test "$action_check" && check_ovpn
