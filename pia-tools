@@ -56,8 +56,8 @@ fi
 usage() {
     echo "Usage: $1 [-p] [-a|d] [-u|s|l] [-c] [-h]"
     echo "  -p: Request new port"
-    echo "  -a: Block non VPN traffic (iptables)"
-    echo "  -d: Unblock non VPN traffic (iptables)"
+    echo "  -d: Block non VPN traffic (iptables)"
+    echo "  -a: Unblock non VPN traffic (iptables)"
     echo "  -g: Use PIA DNS (updates resolv.conf)"
     echo "  -l: List available VPN exit point"
     echo "  -u: Update configuration files"
