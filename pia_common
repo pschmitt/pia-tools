@@ -1,4 +1,5 @@
 auth-user-pass passwd
-script-security 2 
+script-security 2
+pull-filter ignore "auth-token"
 up "/etc/openvpn/pia/pia-up"
 down "/etc/openvpn/pia/pia-down"
